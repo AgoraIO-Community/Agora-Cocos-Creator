@@ -69,3 +69,7 @@ quick_gen_project_*_autogen.sh.meta
 #Xcode
 *.xcuserdatad/
 xcshareddata
+
+#attach files
+build/jsb-link/frameworks/runtime-src/cocos2d-x
+build/jsb-link/frameworks/runtime-src/cocos2d-x-jsb/Agora/AgoraRtcEngineKit.framework
