@@ -50,7 +50,7 @@ WARN_FOR_WEB_PAGE: 5,
 ERROR_FOR_WEB_PAGE: 6
 });
 cc._initDebugSetting = function(t) {
-cc.log = cc.logID = cc.warn = cc.warnID = cc.error = cc.errorID = cc.assert = cc.assertID = function() {};
+cc.log = cc.logID = cc.warn = cc.warnID = cc.error = cc.errorID = cc._throw = cc.assert = cc.assertID = function() {};
 if (t !== cc.DebugMode.NONE) {
 if (console && console.log.apply) {
 console.error || (console.error = console.log);
@@ -563,7 +563,7 @@ cc.AnimationManager = e.exports = r;
 function n(t, e) {
 c.call(this);
 cc.EventTarget.call(this);
-this._currentFramePlayed = !1;
+this._firstFramePlayed = !1;
 this._delay = 0;
 this._delayTime = 0;
 this._wrappedInfo = new l();
@@ -589,8 +589,8 @@ function o() {
 var t = this.sample(), e = this._hasListenerCache;
 if (e && e.lastframe) {
 var i;
-i = this._lastWrappedInfo ? this._lastWrappedInfo : this._lastWrappedInfo = new l(t);
-this.repeatCount > 1 && (0 | t.iterations) > (0 | i.iterations) && this.emit("lastframe", this);
+i || (i = this._lastWrappedInfo = new l(t));
+this.repeatCount > 1 && (0 | t.iterations) > (0 | i.iterations) && ((this.wrapMode & u.Reverse) === u.Reverse ? i.direction < 0 && this.emit("lastframe", this) : i.direction > 0 && this.emit("lastframe", this));
 i.set(t);
 }
 if (t.stopped) {
@@ -606,9 +606,10 @@ n[o].sample(t, i, this);
 }
 var s = this._hasListenerCache;
 if (s && s.lastframe) {
-void 0 === this._lastIterations && (this._lastIterations = i);
-(this.time > 0 && this._lastIterations > i || this.time < 0 && this._lastIterations < i) && this.emit("lastframe", this);
-this._lastIterations = i;
+var c = t > 0 ? t / e : -t / e, a = this._lastIterations;
+void 0 === a && (a = this._lastIterations = c);
+(0 | c) > (0 | a) && this.emit("lastframe", this);
+this._lastIterations = c;
 }
 }
 var s = cc.js, c = t("./playable"), a = t("./types"), l = a.WrappedInfo, h = a.WrapMode, u = a.WrapModeMask;
@@ -641,7 +642,6 @@ cc.director.getAnimationManager().removeAnimation(this);
 this.emit("pause", this);
 };
 d.setTime = function(t) {
-this._currentFramePlayed = !1;
 this.time = t || 0;
 for (var e = this.curves, i = 0, n = e.length; i < n; i++) {
 var o = e[i];
@@ -653,7 +653,7 @@ if (this._delayTime > 0) {
 this._delayTime -= t;
 if (this._delayTime > 0) return;
 }
-this._currentFramePlayed ? this.time += t * this.speed : this._currentFramePlayed = !0;
+this._firstFramePlayed ? this.time += t * this.speed : this._firstFramePlayed = !0;
 this._process();
 };
 d._needRevers = function(t) {
@@ -881,7 +881,8 @@ backOut: function(t) {
 return --t * t * (2.70158 * t + 1.70158) + 1;
 },
 backInOut: function(t) {
-return (t *= 2) < 1 ? t * t * (3.5949095 * t - 2.5949095) * .5 : .5 * ((t -= 2) * t * (3.5949095 * t + 2.5949095) + 2);
+var e = 2.5949095;
+return (t *= 2) < 1 ? t * t * ((e + 1) * t - e) * .5 : .5 * ((t -= 2) * t * ((e + 1) * t + e) + 2);
 },
 bounceOut: function(t) {
 return t < 1 / 2.75 ? 7.5625 * t * t : t < 2 / 2.75 ? 7.5625 * (t -= 1.5 / 2.75) * t + .75 : t < 2.5 / 2.75 ? 7.5625 * (t -= 2.25 / 2.75) * t + .9375 : 7.5625 * (t -= 2.625 / 2.75) * t + .984375;
@@ -3960,7 +3961,6 @@ cc.game.off(cc.game.EVENT_SHOW, this._restoreCallback, this);
 },
 onDestroy: function() {
 this.stop();
-this.audio.destroy();
 cc.audioEngine.uncache(this._clip);
 },
 play: function() {
@@ -10114,7 +10114,7 @@ s |= 0;
 a = e - n(c = r.substr(s));
 }
 u = 0;
-for (;a <= i && u++ < 10; ) {
+for (;a < i && u++ < 10; ) {
 if (c) {
 var d = this.label_wordRex.exec(c);
 h = d ? d[0].length : 1;
@@ -10138,7 +10138,7 @@ s -= f[0].length;
 l = r.substr(s);
 _ = r.substr(0, s);
 }
-0 === o.length ? o.push(_) : (_ = _.trim()).length > 0 && o.push(_);
+0 === o.length && "" === l && "" === c ? o.push(_) : (_ = _.trim()).length > 0 && o.push(_);
 e = n(r = l || c);
 }
 0 === o.length ? o.push(r) : (r = r.trim()).length > 0 && o.push(r);
@@ -10159,9 +10159,9 @@ o = {};
 n = i;
 }
 r = o.type ? "uuid" === o.type : cc.AssetLibrary._getAssetUrl(n);
-cc.AssetLibrary._getAssetInfoInRuntime(n, v);
-o.url = r ? v.url : n;
-if (v.url && "uuid" === o.type && v.raw) {
+cc.AssetLibrary._getAssetInfoInRuntime(n, y);
+o.url = r ? y.url : n;
+if (y.url && "uuid" === o.type && y.raw) {
 o.type = null;
 o.isRawAsset = !0;
 } else r || (o.isRawAsset = !0);
@@ -10177,23 +10177,23 @@ this.onProgress = null;
 this._autoReleaseSetting = {};
 0;
 }
-var c = i("../platform/js"), a = i("./pipeline"), l = i("./loading-items"), h = i("./asset-loader"), u = i("./downloader"), d = i("./loader"), f = i("./asset-table"), _ = i("../platform/utils").callInNextTick, p = i("./auto-release-utils"), g = new f(), y = [ "mp3", "ogg", "wav", "m4a" ], v = {
+var c = i("../platform/js"), a = i("./pipeline"), l = i("./loading-items"), h = i("./asset-loader"), u = i("./downloader"), d = i("./loader"), f = i("./asset-table"), _ = i("../platform/utils").callInNextTick, p = i("./auto-release-utils"), g = new f(), y = {
 url: null,
 raw: !1
-}, m = [], C = [];
+}, v = [], m = [];
 c.extend(s, a);
-var T = s.prototype;
-T.init = function(t) {};
-T.getXMLHttpRequest = function() {
+var C = s.prototype;
+C.init = function(t) {};
+C.getXMLHttpRequest = function() {
 return window.XMLHttpRequest ? new window.XMLHttpRequest() : new ActiveXObject("MSXML2.XMLHTTP");
 };
-T.addDownloadHandlers = function(t) {
+C.addDownloadHandlers = function(t) {
 this.downloader.addHandlers(t);
 };
-T.addLoadHandlers = function(t) {
+C.addLoadHandlers = function(t) {
 this.loader.addHandlers(t);
 };
-T.load = function(t, e, i) {
+C.load = function(t, e, i) {
 if (void 0 === i) {
 i = e;
 e = this.onProgress || null;
@@ -10203,7 +10203,7 @@ if (!(t instanceof Array)) {
 o = !0;
 t = t ? [ t ] : [];
 }
-m.length = 0;
+v.length = 0;
 for (var s = 0; s < t.length; ++s) {
 var c = t[s];
 if (c && c.id) {
@@ -10213,7 +10213,7 @@ c.uuid || c.url || (c.url = c.id);
 var a = r(c);
 if (a.url || a.uuid) {
 var h = this._cache[a.url];
-m.push(h || a);
+v.push(h || a);
 }
 }
 var u = l.create(this, e, (function(t, e) {
@@ -10229,16 +10229,16 @@ e.destroy();
 }));
 }));
 l.initQueueDeps(u);
-u.append(m);
-m.length = 0;
+u.append(v);
+v.length = 0;
 };
-T.flowInDeps = function(t, e, i) {
-C.length = 0;
+C.flowInDeps = function(t, e, i) {
+m.length = 0;
 for (var n = 0; n < e.length; ++n) {
 var o = r(e[n]);
 if (o.url || o.uuid) {
 var s = this._cache[o.url];
-s ? C.push(s) : C.push(o);
+s ? m.push(s) : m.push(o);
 }
 }
 var c = l.create(this, t ? function(t, e, i) {
@@ -10252,12 +10252,12 @@ if (t) {
 var a = l.getQueue(t);
 c._ownerQueue = a._ownerQueue || a;
 }
-var h = c.append(C, t);
-C.length = 0;
+var h = c.append(m, t);
+m.length = 0;
 return h;
 };
-T._resources = g;
-T._getResUuid = function(t, e, i) {
+C._resources = g;
+C._getResUuid = function(t, e, i) {
 if (!t) return null;
 var n = t.indexOf("?");
 -1 !== n && (t = t.substr(0, n));
@@ -10271,24 +10271,24 @@ t = t.slice(0, -r.length);
 }
 return o;
 };
-T._getReferenceKey = function(i) {
+C._getReferenceKey = function(i) {
 var n;
 "object" === ("object" == (e = typeof i) ? t(i) : e) ? n = i._uuid || null : "string" === ("object" == (e = typeof i) ? t(i) : e) && (n = this._getResUuid(i, null, !0) || i);
 if (!n) {
 cc.warnID(4800, i);
 return n;
 }
-cc.AssetLibrary._getAssetInfoInRuntime(n, v);
-return this._cache[v.url] ? v.url : n;
+cc.AssetLibrary._getAssetInfoInRuntime(n, y);
+return this._cache[y.url] ? y.url : n;
 };
-T._urlNotFound = function(t, e, i) {
+C._urlNotFound = function(t, e, i) {
 _((function() {
 t = cc.url.normalize(t);
 var n = (e ? c.getClassName(e) : "Asset") + ' in "resources/' + t + '" does not exist.';
 i && i(new Error(n), []);
 }));
 };
-T._parseLoadResArgs = function(t, e, i) {
+C._parseLoadResArgs = function(t, e, i) {
 if (void 0 === i) {
 var n = cc.isChildClassOf(t, cc.RawAsset);
 if (e) {
@@ -10310,7 +10310,7 @@ onProgress: e,
 onComplete: i
 };
 };
-T.loadRes = function(t, e, i, n) {
+C.loadRes = function(t, e, i, n) {
 var o = this._parseLoadResArgs(e, i, n);
 e = o.type;
 i = o.onProgress;
@@ -10324,7 +10324,7 @@ e && r.setAutoReleaseRecursively(s, !1);
 n && n(t, e);
 })) : r._urlNotFound(t, e, n);
 };
-T._loadResUuids = function(t, e, i, n) {
+C._loadResUuids = function(t, e, i, n) {
 if (t.length > 0) {
 var o = this, r = t.map((function(t) {
 return {
@@ -10349,7 +10349,7 @@ n ? i(t, s, c) : i(t, s);
 n ? i(null, [], []) : i(null, []);
 }));
 };
-T.loadResArray = function(t, e, i, n) {
+C.loadResArray = function(t, e, i, n) {
 var o = this._parseLoadResArgs(e, i, n);
 e = o.type;
 i = o.onProgress;
@@ -10364,7 +10364,7 @@ r.push(a);
 }
 this._loadResUuids(r, i, n);
 };
-T.loadResDir = function(t, e, i, n) {
+C.loadResDir = function(t, e, i, n) {
 var o = this._parseLoadResArgs(e, i, n);
 e = o.type;
 i = o.onProgress;
@@ -10372,7 +10372,7 @@ n = o.onComplete;
 var r = [], s = g.getUuidArray(t, e, r);
 this._loadResUuids(s, i, n, r);
 };
-T.getRes = function(t, e) {
+C.getRes = function(t, e) {
 var i = this._cache[t];
 if (!i) {
 var n = this._getResUuid(t, e, !0);
@@ -10383,10 +10383,10 @@ i = this._cache[o];
 i && i.alias && (i = i.alias);
 return i && i.complete ? i.content : null;
 };
-T.getResCount = function() {
+C.getResCount = function() {
 return Object.keys(this._cache).length;
 };
-T.getDependsRecursively = function(t) {
+C.getDependsRecursively = function(t) {
 if (t) {
 var e = this._getReferenceKey(t), i = p.getDependsRecursively(e);
 i.push(e);
@@ -10394,7 +10394,7 @@ return i;
 }
 return [];
 };
-T.release = function(t) {
+C.release = function(t) {
 if (Array.isArray(t)) for (var e = 0; e < t.length; e++) {
 var i = t[e];
 this.release(i);
@@ -10405,38 +10405,38 @@ var r = this.removeItem(n);
 if ((t = o.content) instanceof cc.Asset) {
 t instanceof cc.SpriteFrame && r && t.release();
 for (var s = t.rawUrls, c = 0; c < s.length; c++) this.release(s[c]);
-} else t instanceof cc.Texture2D ? cc.textureCache.removeTextureForKey(o.rawUrl || o.url) : -1 !== y.indexOf(o.type) && cc.audioEngine.uncache(o.rawUrl || o.url);
+} else t instanceof cc.Texture2D && cc.textureCache.removeTextureForKey(o.rawUrl || o.url);
 0;
 }
 }
 };
-T.releaseAsset = function(t) {
+C.releaseAsset = function(t) {
 var e = t._uuid;
 e && this.release(e);
 };
-T.releaseRes = function(t, e) {
+C.releaseRes = function(t, e) {
 var i = this._getResUuid(t, e);
 i ? this.release(i) : cc.errorID(4914, t);
 };
-T.releaseResDir = function(t, e) {
+C.releaseResDir = function(t, e) {
 for (var i = g.getUuidArray(t, e), n = 0; n < i.length; n++) {
 var o = i[n];
 this.release(o);
 }
 };
-T.releaseAll = function() {
+C.releaseAll = function() {
 for (var t in this._cache) this.release(t);
 };
-T.removeItem = function(t) {
+C.removeItem = function(t) {
 var e = a.prototype.removeItem.call(this, t);
 delete this._autoReleaseSetting[t];
 return e;
 };
-T.setAutoRelease = function(t, e) {
+C.setAutoRelease = function(t, e) {
 var i = this._getReferenceKey(t);
 i && (this._autoReleaseSetting[i] = !!e);
 };
-T.setAutoReleaseRecursively = function(t, e) {
+C.setAutoReleaseRecursively = function(t, e) {
 e = !!e;
 var i = this._getReferenceKey(t);
 if (i) {
@@ -10447,7 +10447,7 @@ this._autoReleaseSetting[r] = e;
 }
 } else 0;
 };
-T.isAutoRelease = function(t) {
+C.isAutoRelease = function(t) {
 var e = this._getReferenceKey(t);
 return !!e && !!this._autoReleaseSetting[e];
 };
@@ -10863,7 +10863,7 @@ return new Error("JSON Loader: Parse json [" + i.id + "] failed : " + t);
 }
 }
 function s(t, e) {
-if (a.platform !== a.WECHAT_GAME && a.platform !== a.QQ_PLAY && !(t.content instanceof Image)) return new Error("Image Loader: Input item doesn't contain Image content");
+if (a.platform !== a.WECHAT_GAME && !(t.content instanceof Image)) return new Error("Image Loader: Input item doesn't contain Image content");
 var i = t.rawUrl, n = cc.textureCache.getTextureForKey(i) || new h();
 n.url = i;
 n.initWithElement(t.content);
@@ -11249,14 +11249,6 @@ return i(r);
 var c = o._doLoadNewPack(t, e, s);
 c ? i(null, c) : i(n(t, e));
 }));
-},
-_doPreload: function(t, e) {
-var i = a[t];
-i || (i = a[t] = new o());
-if (i.state !== u) {
-i.read(c[t], e);
-i.state = u;
-}
 },
 _doLoadNewPack: function(t, e, i) {
 var n = a[e];
@@ -11892,9 +11884,7 @@ statics: {
 DrawBits: b2.Draw,
 PTM_RATIO: s,
 VELOCITY_ITERATIONS: 10,
-POSITION_ITERATIONS: 10,
-FIXED_TIME_STEP: 1 / 60,
-MAX_ACCUMULATOR: .2
+POSITION_ITERATIONS: 10
 },
 ctor: function() {
 this.__instanceId = cc.ClassManager.getNewInstanceId();
@@ -11923,23 +11913,22 @@ this._steping = !0;
 var i = h.VELOCITY_ITERATIONS, n = h.POSITION_ITERATIONS;
 if (this.enabledAccumulator) {
 this._accumulator += t;
-var o = h.FIXED_TIME_STEP, r = h.MAX_ACCUMULATOR;
-this._accumulator > r && (this._accumulator = r);
-for (;this._accumulator > o; ) {
-e.Step(o, i, n);
-this._accumulator -= o;
+this._accumulator > .2 && (this._accumulator = .2);
+for (;this._accumulator > 1 / 60; ) {
+e.Step(1 / 60, i, n);
+this._accumulator -= 1 / 60;
 }
 } else {
-var s = 1 / cc.game.config.frameRate;
-e.Step(s, i, n);
+var o = 1 / cc.game.config.frameRate;
+e.Step(o, i, n);
 }
 e.DrawDebugData();
 this._steping = !1;
-for (var c = this._delayEvents, a = 0, l = c.length; a < l; a++) {
-var u = c[a];
-u.target[u.func].apply(u.target, u.args);
+for (var r = this._delayEvents, s = 0, c = r.length; s < c; s++) {
+var a = r[s];
+a.target[a.func].apply(a.target, a.args);
 }
-c.length = 0;
+r.length = 0;
 this._syncNode();
 }
 },
@@ -13808,31 +13797,32 @@ var o = l._resources;
 o.reset();
 var r = t.rawAssets;
 if (r) {
-for (var a in r) {
-var u = r[a];
-for (var d in u) {
-var y = u[d], v = y[0], m = y[1], C = cc.js._getClassById(m);
-if (C) {
-g[d] = new s(a + "/" + v, C);
-if ("assets" === a && v.startsWith("resources/")) {
-if (cc.isChildClassOf(C, c)) {
-var T = cc.path.extname(v);
-v = T ? v.slice("resources/".length, -T.length) : v.slice("resources/".length);
-} else v = v.slice("resources/".length);
-var b = 1 === y[2];
-o.add(v, d, C, !b);
+var a = "resources/";
+for (var u in r) {
+var d = r[u];
+for (var y in d) {
+var v = d[y], m = v[0], C = v[1], T = cc.js._getClassById(C);
+if (T) {
+g[y] = new s(u + "/" + m, T);
+if ("assets" === u && m.startsWith(a)) {
+if (cc.isChildClassOf(T, c)) {
+var b = cc.path.extname(m);
+m = b ? m.slice(a.length, -b.length) : m.slice(a.length);
+} else m = m.slice(a.length);
+var S = 1 === v[2];
+o.add(m, y, T, !S);
 }
-} else cc.error("Cannot get", m);
+} else cc.error("Cannot get", C);
 }
 }
 }
 t.packedAssets && h.initPacks(t.packedAssets);
-var S = t.mountPaths;
-S || (S = {
+var E = t.mountPaths;
+E || (E = {
 assets: p + "assets",
 internal: p + "internal"
 });
-cc.url._init(S);
+cc.url._init(E);
 }
 };
 y._uuidToAsset = {};
@@ -14051,8 +14041,6 @@ r.cls = s;
 return s;
 })(n, o, r, i);
 n || (n = cc.js.getClassName(s));
-s._sealed = !0;
-o && (o._sealed = !1);
 var c = i.properties;
 if ("function" === ("object" == (e = typeof c) ? t(c) : e) || o && null === o.__props__ || r && r.some((function(t) {
 return null === t.__props__;
@@ -14655,8 +14643,7 @@ BATCH_VERTEX_COUNT: 2e4,
 ENABLE_GC_FOR_NATIVE_OBJECTS: !0,
 ENABLE_TILEDMAP_CULLING: !0,
 DOWNLOAD_MAX_CONCURRENT: 64,
-ENABLE_TRANSPARENT_CANVAS: !1,
-ENABLE_WEBGL_ANTIALIAS: !1
+ENABLE_TRANSPARENT_CANVAS: !1
 };
 var n = !0;
 cc.defineGetterSetter(cc.macro, "ENABLE_CULLING", (function() {
@@ -14825,8 +14812,8 @@ this._objFlags |= l;
 };
 0;
 u._deserialize = null;
-cc.isValid = function(i, n) {
-return "object" === ("object" == (e = typeof i) ? t(i) : e) ? !(!i || i._objFlags & (n ? 4 | l : l)) : "undefined" !== ("object" == (e = typeof i) ? t(i) : e);
+cc.isValid = function(i) {
+return "object" === ("object" == (e = typeof i) ? t(i) : e) ? !(!i || i._objFlags & l) : "undefined" !== ("object" == (e = typeof i) ? t(i) : e);
 };
 0;
 cc.Object = n.exports = r;
@@ -14887,11 +14874,8 @@ r.DESKTOP_BROWSER = 101;
 r.EDITOR_PAGE = 102;
 r.EDITOR_CORE = 103;
 r.WECHAT_GAME = 104;
-r.QQ_PLAY = 105;
 r.BROWSER_TYPE_WECHAT = "wechat";
 r.BROWSER_TYPE_WECHAT_GAME = "wechatgame";
-r.BROWSER_TYPE_WECHAT_GAME_SUB = "wechatgamesub";
-r.BROWSER_TYPE_QQ_PLAY = "qqplay";
 r.BROWSER_TYPE_ANDROID = "androidbrowser";
 r.BROWSER_TYPE_IE = "ie";
 r.BROWSER_TYPE_QQ = "qqbrowser";
@@ -16653,22 +16637,16 @@ return null;
 return "string" === ("object" == (e = typeof i) ? t(i) : e) ? f.getClassByName(i) : i;
 }
 function s(t, e) {
-if (e._sealed) for (var i = 0; i < t._components.length; ++i) {
+for (var i = 0; i < t._components.length; ++i) {
 var n = t._components[i];
-if (n.constructor === e) return n;
-} else for (var o = 0; o < t._components.length; ++o) {
-var r = t._components[o];
-if (r instanceof e) return r;
+if (n instanceof e) return n;
 }
 return null;
 }
 function c(t, e, i) {
-if (e._sealed) for (var n = 0; n < t._components.length; ++n) {
+for (var n = 0; n < t._components.length; ++n) {
 var o = t._components[n];
-o.constructor === e && i.push(o);
-} else for (var r = 0; r < t._components.length; ++r) {
-var s = t._components[r];
-s instanceof e && i.push(s);
+o instanceof e && i.push(o);
 }
 }
 function a(t, e) {
@@ -20700,7 +20678,6 @@ r("CC_DEBUG", !0);
 r("CC_JSB", s("jsb"));
 r("CC_BUILD", !1);
 r("CC_WECHATGAME", !1);
-r("CC_QQPLAY", !1);
 r("CC_SUPPORT_JIT", !0);
 cc.ClassManager || (cc.ClassManager = window.ClassManager);
 0;
@@ -21023,17 +21000,7 @@ TintBy: l,
 BezierBy: s
 };
 for (var g in p) {
-var y = cc[g].prototype;
-y.update = p[g];
-y.speed = function(t) {
-return new cc.Speed(this, t);
-};
-y.repeat = function(t) {
-return new cc.Repeat(this, t);
-};
-y.repeatForever = function() {
-return new cc.RepeatForever(this);
-};
+cc[g].prototype.update = p[g];
 }
 }), {} ],
 186: [ (function(t, e, i) {
@@ -21072,7 +21039,6 @@ i.resume(this.id);
 e.stop = function() {
 i.stop(this.id);
 };
-e.destroy = function() {};
 e.setLoop = function(t) {
 this.loop = t;
 i.setLoop(this.id, t);
@@ -22948,7 +22914,7 @@ Math.sign || (Math.sign = function(t) {
 return 0 === (t = +t) || isNaN(t) ? t : t > 0 ? 1 : -1;
 });
 Number.isInteger || (Number.isInteger = function(i) {
-return "number" === ("object" == (e = typeof i) ? t(i) : e) && isFinite(i) && Math.floor(i) === i;
+return "number" === ("object" == (e = typeof i) ? t(i) : e) && (0 | i) === i;
 });
 var r = window.performance || Date, s = Object.create(null);
 console.time = function(t) {

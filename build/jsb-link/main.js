@@ -1,5 +1,7 @@
 (function () {
 
+    'use strict';
+
     function boot () {
 
         var settings = window._CCSettings;
@@ -52,16 +54,6 @@
             canvas = document.getElementById('GameCanvas');
         }
 
-        if (false) {
-            var ORIENTATIONS = {
-                'portrait': 1,
-                'landscape left': 2,
-                'landscape right': 3
-            };
-            BK.Director.screenMode = ORIENTATIONS[settings.orientation];
-            initAdapter();
-        }
-
         function setLoadingDisplay () {
             // Loading splash scene
             var splash = document.getElementById('splash');
@@ -83,7 +75,7 @@
         var onStart = function () {
             cc.view.resizeWithBrowserSize(true);
 
-            if (!false && !false) {
+            if (!false) {
                 // UC browser on many android devices have performance issue with retina display
                 if (cc.sys.os !== cc.sys.OS_ANDROID || cc.sys.browserType !== cc.sys.BROWSER_TYPE_UC) {
                     cc.view.enableRetina(true);
@@ -99,14 +91,14 @@
                     else if (settings.orientation === 'portrait') {
                         cc.view.setOrientation(cc.macro.ORIENTATION_PORTRAIT);
                     }
-                    cc.view.enableAutoFullScreen([
-                        cc.sys.BROWSER_TYPE_BAIDU,
-                        cc.sys.BROWSER_TYPE_WECHAT,
-                        cc.sys.BROWSER_TYPE_MOBILE_QQ,
-                        cc.sys.BROWSER_TYPE_MIUI,
-                    ].indexOf(cc.sys.browserType) < 0);
+                    // qq, wechat, baidu
+                    cc.view.enableAutoFullScreen(
+                        cc.sys.browserType !== cc.sys.BROWSER_TYPE_BAIDU &&
+                        cc.sys.browserType !== cc.sys.BROWSER_TYPE_WECHAT &&
+                        cc.sys.browserType !== cc.sys.BROWSER_TYPE_MOBILE_QQ
+                    );
                 }
-
+                
                 // Limit downloading max concurrent task to 2,
                 // more tasks simultaneously may cause performance draw back on some android system / brwosers.
                 // You can adjust the number based on your own test result, you have to set it before any loading process to take effect.
@@ -123,10 +115,6 @@
                 packedAssets: settings.packedAssets,
                 md5AssetsMap: settings.md5AssetsMap
             });
-
-            if (false) {
-                cc.Pipeline.Downloader.PackDownloader._doPreload("WECHAT_SUBDOMAIN", settings.WECHAT_SUBDOMAIN_DATA);
-            }
 
             var launchScene = settings.launchScene;
 
@@ -149,22 +137,13 @@
 
         // jsList
         var jsList = settings.jsList;
-
-        if (false) {
-            BK.Script.loadlib();
+        var bundledScript = settings.debug ? 'src/project.dev.js' : 'src/project.js';
+        if (jsList) {
+            jsList = jsList.map(function (x) { return 'src/' + x; });
+            jsList.push(bundledScript);
         }
-        else
-        {
-            var bundledScript = settings.debug ? 'src/project.dev.js' : 'src/project.js';
-            if (jsList) {
-                jsList = jsList.map(function (x) {
-                    return 'src/' + x;
-                });
-                jsList.push(bundledScript);
-            }
-            else {
-                jsList = [bundledScript];
-            }
+        else {
+            jsList = [bundledScript];
         }
 
         // anysdk scripts
@@ -172,52 +151,36 @@
 //            jsList = jsList.concat(['src/anysdk/jsb_anysdk.js', 'src/anysdk/jsb_anysdk_constants.js']);
         }
 
+
         var option = {
             //width: width,
             //height: height,
             id: 'GameCanvas',
             scenes: settings.scenes,
             debugMode: settings.debug ? cc.DebugMode.INFO : cc.DebugMode.ERROR,
-            showFPS: (!false && !false) && settings.debug,
+            showFPS: !false && settings.debug,
             frameRate: 60,
             jsList: jsList,
             groupList: settings.groupList,
             collisionMatrix: settings.collisionMatrix,
             renderMode: 0
-        }
+        };
 
         cc.game.run(option, onStart);
-    }
-
-    if (false) {
-        BK.Script.loadlib('GameRes://libs/qqplay-adapter.js');
-        BK.Script.loadlib('GameRes://src/settings.js');
-        BK.Script.loadlib();
-        BK.Script.loadlib('GameRes://libs/qqplay-downloader.js');
-        qqPlayDownloader.REMOTE_SERVER_ROOT = "";
-        var prevPipe = cc.loader.md5Pipe || cc.loader.assetLoader;
-        cc.loader.insertPipeAfter(prevPipe, qqPlayDownloader);
-        // <plugin script code>
-        boot();
-        return;
-    }
-
-    if (false) {
-        require(window._CCSettings.debug ? 'cocos2d-js.js' : 'cocos2d-js-min.js');
-        var prevPipe = cc.loader.md5Pipe || cc.loader.assetLoader;
-        cc.loader.insertPipeAfter(prevPipe, wxDownloader);
-        boot();
-        return;
     }
 
     if (window.jsb) {
         require('src/settings.js');
         require('src/jsb_polyfill.js');
         boot();
-        return;
     }
-
-    if (window.document) {
+    else if (false) {
+        require(window._CCSettings.debug ? 'cocos2d-js.js' : 'cocos2d-js-min.js');
+        var prevPipe = cc.loader.md5Pipe || cc.loader.assetLoader;
+        cc.loader.insertPipeAfter(prevPipe, wxDownloader);
+        boot();
+    }
+    else if (window.document) {
         var splash = document.getElementById('splash');
         splash.style.display = 'block';
 

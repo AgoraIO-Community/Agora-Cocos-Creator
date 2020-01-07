@@ -27,14 +27,27 @@ import org.cocos2dx.lib.Cocos2dxActivity;
 import org.cocos2dx.lib.Cocos2dxGLSurfaceView;
 
 import android.os.Bundle;
-import org.cocos2dx.javascript.SDKWrapper;
-
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+//================= agora creator ==============
+import android.Manifest;
+import android.annotation.TargetApi;
+import android.content.pm.PackageManager;
+import android.os.Build;
+//================= agora creator ==============
 
 public class AppActivity extends Cocos2dxActivity {
 
+    //========== agora creator permission =============
+    private static final int PERMISSION_REQ_ID = 22;
+    private static final String[] REQUESTED_PERMISSIONS = {
+            Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.CAMERA,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+    //========== agora creator permission =============
+
+    @TargetApi(Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,7 +62,32 @@ public class AppActivity extends Cocos2dxActivity {
         // DO OTHER INITIALIZATION BELOW
         
         SDKWrapper.getInstance().init(this);
+
+        //========== agora creator =============
+        if (checkSelfPermission(REQUESTED_PERMISSIONS[0], PERMISSION_REQ_ID) &&
+                checkSelfPermission(REQUESTED_PERMISSIONS[1], PERMISSION_REQ_ID) &&
+                checkSelfPermission(REQUESTED_PERMISSIONS[2], PERMISSION_REQ_ID)) {
+        }
+        loadAgoraNative();
+        //========== agora creator =============
     }
+
+    //========== agora creator =============
+    @TargetApi(Build.VERSION_CODES.M)
+    private boolean checkSelfPermission(String permission, int requestCode) {
+        if (super.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(REQUESTED_PERMISSIONS, requestCode);
+            return false;
+        }
+        return true;
+    }
+
+    private static void loadAgoraNative()
+    {
+        System.loadLibrary("agora-rtc-sdk-jni");
+    }
+    //========== agora creator =============
+
 	
     @Override
     public Cocos2dxGLSurfaceView onCreateView() {

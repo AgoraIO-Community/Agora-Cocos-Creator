@@ -2,6 +2,6 @@
   "engine_version": "Cocos2d-x-lite v1.8.2",
   "has_native": true,
   "project_type": "js",
-  "projectName": "Agora-iOS-Cocos",
-  "packageName": "org.cocos2d.helloworld"
+  "projectName": "AgoraCocosCreator",
+  "packageName": "io.agora.cocos"
 }

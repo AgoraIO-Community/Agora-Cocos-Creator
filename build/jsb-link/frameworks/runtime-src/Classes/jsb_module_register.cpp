@@ -88,11 +88,9 @@
 #endif
 
 #include "cocos2d.h"
-
-#include "HomeAgora.hpp"
-#include "AgoraStats.hpp"
-#include "AgoraClientStats.hpp"
-#include "AgoraNetworkQualityObject.hpp"
+//========== agora creator =============
+#include "agora/jsb_agoraCreator.hpp"
+//========== agora creator =============
 
 using namespace cocos2d;
 
@@ -197,13 +195,11 @@ bool jsb_register_all_modules()
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
     se->addRegisterCallback(register_javascript_java_bridge);
 #endif
+    //========== agora creator =============
+    //Registe agora engine
+    se->addRegisterCallback(register_jsb_agoraCreator);
+    //========== agora creator =============
 
-    // 声网
-    se->addRegisterCallback(js_register_hh_HomeAgora);
-    se->addRegisterCallback(js_register_hh_AgoraStats);
-    se->addRegisterCallback(js_register_hh_AgoraClientStats);
-    se->addRegisterCallback(js_register_hh_AgoraNetworkQualityObject);
-    
     // run_boot_script has to be at last.
     se->addRegisterCallback(run_boot_script);
 
