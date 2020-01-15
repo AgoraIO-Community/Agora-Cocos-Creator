@@ -38,9 +38,10 @@ cc.Class({
 
     // use this for initialization
     onLoad: function () {
+        var appId = #YOUR_APPID;
         this.initAgoraEvents(true);
         this.initClickEvents(true);
-        agoraEngine.initialize(#YOUR_APPID);
+        agoraEngine.initialize(appId);
         agoraEngine.setRenderMode(1);
         agoraEngine.setupLocalVideo("LocalVideoDiv");
         agoraEngine.joinChannel("", "1223", "", 0);
