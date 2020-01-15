@@ -5,7 +5,7 @@ step 1: Build web-desktop project and copy it into electron demo.
 
 1.2: Input your appId in CocosCreator_for-Electron/assets/Script/HelloWorld.js : var appId = #YOUR_APPID.
 
-1.3: Project->Build->Platform->Web Desktop->Build.(These steps is just want to build an Web-Desktop project, Not: do not need to compile it)
+1.3: Project->Build->Platform->Web Desktop->Build.(These steps is just want to build an Web-Desktop project, Note: do not need to compile it)
 
 1.4: copy CocosCreator_for-Electron/build/web-desktop into Agora-Electron-React/ .
 
