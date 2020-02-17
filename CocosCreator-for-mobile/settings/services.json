@@ -1,0 +1,19 @@
+{
+	"game": {
+		"name": "AgoraCreator",
+		"appid": "621327899",
+		"cid": "0"
+	},
+	"configs": [
+		{
+			"appid": "621327899",
+			"services": [
+				{
+					"service_id": "242",
+					"enable": false
+				}
+			]
+		}
+	],
+	"needExecNative": true
+}

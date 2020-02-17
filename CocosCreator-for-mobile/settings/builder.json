@@ -1,36 +1,43 @@
 {
-  "appKey": "",
-  "appSecret": "",
-  "encryptJs": false,
   "excludeScenes": [],
-  "includeAnySDK": false,
-  "includeSDKBox": false,
-  "inlineSpriteFrames": true,
-  "inlineSpriteFrames_native": true,
-  "jailbreakPlatform": false,
-  "md5Cache": false,
-  "mergeStartScene": false,
-  "oauthLoginServer": "",
-  "optimizeHotUpdate": false,
   "orientation": {
     "landscapeLeft": true,
     "landscapeRight": true,
     "portrait": false,
     "upsideDown": false
   },
-  "packageName": "io.agora.cocos",
-  "privateKey": "",
-  "renderMode": "0",
+  "packageName": "org.cocos2d.helloworld",
   "startScene": "2d2f792f-a40c-49bb-a189-ed176a246e49",
-  "title": "AgoraCocosCreator",
+  "title": "hello_world",
   "webOrientation": "auto",
-  "wechatgame": {
-    "REMOTE_SERVER_ROOT": "",
-    "appid": "wx6ac3f5090a6b99c5",
-    "isSubdomain": false,
-    "orientation": "portrait",
-    "subContext": ""
+  "includeSDKBox": false,
+  "inlineSpriteFrames": true,
+  "inlineSpriteFrames_native": true,
+  "mergeStartScene": false,
+  "optimizeHotUpdate": false,
+  "md5Cache": false,
+  "encryptJs": true,
+  "xxteaKey": "a8d15506-02b0-4f",
+  "zipCompressJs": true,
+  "fb-instant-games": {},
+  "android": {
+    "packageName": "org.cocos2d.helloworld"
   },
-  "xxteaKey": "c4a48bf3-7072-42",
-  "zipCompressJs": true
+  "ios": {
+    "packageName": "org.cocos2d.helloworld"
+  },
+  "mac": {
+    "packageName": "org.cocos2d.helloworld"
+  },
+  "win32": {},
+  "android-instant": {
+    "REMOTE_SERVER_ROOT": "",
+    "host": "",
+    "packageName": "org.cocos2d.helloworld",
+    "pathPattern": "",
+    "recordPath": "",
+    "scheme": "https",
+    "skipRecord": false
+  },
+  "appBundle": false
 }

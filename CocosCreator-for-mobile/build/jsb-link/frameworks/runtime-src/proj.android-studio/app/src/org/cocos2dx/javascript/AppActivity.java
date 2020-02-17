@@ -1,5 +1,6 @@
 /****************************************************************************
-Copyright (c) 2015 Chukong Technologies Inc.
+Copyright (c) 2015-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
 http://www.cocos2d-x.org
 
@@ -26,30 +27,25 @@ package org.cocos2dx.javascript;
 import org.cocos2dx.lib.Cocos2dxActivity;
 import org.cocos2dx.lib.Cocos2dxGLSurfaceView;
 
-import android.os.Bundle;
-import android.content.Intent;
-import android.content.res.Configuration;
-//================= agora creator ==============
 import android.Manifest;
-import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Build;
-//================= agora creator ==============
+import android.os.Bundle;
+
+import android.content.Intent;
+import android.content.res.Configuration;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AppActivity extends Cocos2dxActivity {
 
-    //========== agora creator permission =============
-    private static final int PERMISSION_REQ_ID = 22;
-    private static final String[] REQUESTED_PERMISSIONS = {
-            Manifest.permission.RECORD_AUDIO,
-            Manifest.permission.CAMERA,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-    };
-    //========== agora creator permission =============
-
-    @TargetApi(Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //============= agora creator load so ==============
+        System.loadLibrary("agora-rtc-sdk-jni");
+        //============= agora creator load so ==============
         super.onCreate(savedInstanceState);
         // Workaround in https://stackoverflow.com/questions/16283079/re-launch-of-activity-on-home-button-but-only-the-first-time/16447508
         if (!isTaskRoot()) {
@@ -60,42 +56,33 @@ public class AppActivity extends Cocos2dxActivity {
             return;
         }
         // DO OTHER INITIALIZATION BELOW
-        
         SDKWrapper.getInstance().init(this);
 
-        //========== agora creator =============
-        if (checkSelfPermission(REQUESTED_PERMISSIONS[0], PERMISSION_REQ_ID) &&
-                checkSelfPermission(REQUESTED_PERMISSIONS[1], PERMISSION_REQ_ID) &&
-                checkSelfPermission(REQUESTED_PERMISSIONS[2], PERMISSION_REQ_ID)) {
+        //============= agora creator check permission ==============
+        String[] needPermissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO};
+        checkAndRequestAppPermission(needPermissions, 1000);
+        //============= agora creator check permission ==============
+    }
+
+    public boolean checkAndRequestAppPermission(String[] permissions, int reqCode) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return true;
+        List<String> permissionList = new ArrayList<>();
+        for (String permission : permissions) {
+            if (super.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED)
+                permissionList.add(permission);
         }
-        loadAgoraNative();
-        //========== agora creator =============
+        if (permissionList.size() == 0) return true;
+        String[] requestPermissions = permissionList.toArray(new String[permissionList.size()]);
+        requestPermissions(requestPermissions, reqCode);
+        return false;
     }
-
-    //========== agora creator =============
-    @TargetApi(Build.VERSION_CODES.M)
-    private boolean checkSelfPermission(String permission, int requestCode) {
-        if (super.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(REQUESTED_PERMISSIONS, requestCode);
-            return false;
-        }
-        return true;
-    }
-
-    private static void loadAgoraNative()
-    {
-        System.loadLibrary("agora-rtc-sdk-jni");
-    }
-    //========== agora creator =============
-
-	
+    
     @Override
     public Cocos2dxGLSurfaceView onCreateView() {
         Cocos2dxGLSurfaceView glSurfaceView = new Cocos2dxGLSurfaceView(this);
         // TestCpp should create stencil buffer
         glSurfaceView.setEGLConfigChooser(5, 6, 5, 0, 16, 8);
-
-        SDKWrapper.getInstance().setGLSurfaceView(glSurfaceView);
+        SDKWrapper.getInstance().setGLSurfaceView(glSurfaceView, this);
 
         return glSurfaceView;
     }
@@ -104,18 +91,21 @@ public class AppActivity extends Cocos2dxActivity {
     protected void onResume() {
         super.onResume();
         SDKWrapper.getInstance().onResume();
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         SDKWrapper.getInstance().onPause();
+
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         SDKWrapper.getInstance().onDestroy();
+
     }
 
     @Override

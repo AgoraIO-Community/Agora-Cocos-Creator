@@ -1,4 +1,4 @@
 include ':libcocos2dx'
 project(':libcocos2dx').projectDir = new File('/Applications/CocosCreator.app/Contents/Resources/cocos2d-x/cocos/platform/android/libcocos2dx')
-include ':AgoraCocosCreator'
-project(':AgoraCocosCreator').projectDir = new File(settingsDir, 'app')
+include ':hello_world'
+project(':hello_world').projectDir = new File(settingsDir, 'app')

@@ -1,16 +1,15 @@
 Executable : /Users/zhangtao/Documents/Soft/android-ndk-r14b/ndk-build
 arguments : 
 NDK_PROJECT_PATH=null
-APP_BUILD_SCRIPT=/Users/zhangtao/Documents/work/CocosCreator/demo/Agora_CocosCreator_v1.8.2/build/jsb-link/frameworks/runtime-src/proj.android-studio/app/jni/Android.mk
-NDK_APPLICATION_MK=/Users/zhangtao/Documents/work/CocosCreator/demo/Agora_CocosCreator_v1.8.2/build/jsb-link/frameworks/runtime-src/proj.android-studio/app/jni/Application.mk
+APP_BUILD_SCRIPT=/Users/zhangtao/Documents/work/CocosCreator/demo/Agora-Cocos-Creator/CocosCreator-for-mobile/build/jsb-link/frameworks/runtime-src/proj.android-studio/app/jni/Android.mk
+NDK_APPLICATION_MK=/Users/zhangtao/Documents/work/CocosCreator/demo/Agora-Cocos-Creator/CocosCreator-for-mobile/build/jsb-link/frameworks/runtime-src/proj.android-studio/app/jni/Application.mk
 APP_ABI=armeabi-v7a
 NDK_ALL_ABIS=armeabi-v7a
 NDK_DEBUG=1
-APP_PLATFORM=android-9
-NDK_OUT=/Users/zhangtao/Documents/work/CocosCreator/demo/Agora_CocosCreator_v1.8.2/build/jsb-link/frameworks/runtime-src/proj.android-studio/app/build/intermediates/ndkBuild/debug/obj
-NDK_LIBS_OUT=/Users/zhangtao/Documents/work/CocosCreator/demo/Agora_CocosCreator_v1.8.2/build/jsb-link/frameworks/runtime-src/proj.android-studio/app/build/intermediates/ndkBuild/debug/lib
-NDK_TOOLCHAIN_VERSION=4.9
-APP_PLATFORM=android-14
+APP_PLATFORM=android-16
+NDK_OUT=/Users/zhangtao/Documents/work/CocosCreator/demo/Agora-Cocos-Creator/CocosCreator-for-mobile/build/jsb-link/frameworks/runtime-src/proj.android-studio/app/build/intermediates/ndkBuild/debug/obj
+NDK_LIBS_OUT=/Users/zhangtao/Documents/work/CocosCreator/demo/Agora-Cocos-Creator/CocosCreator-for-mobile/build/jsb-link/frameworks/runtime-src/proj.android-studio/app/build/intermediates/ndkBuild/debug/lib
+NDK_TOOLCHAIN_VERSION=clang
 NDK_MODULE_PATH=/Applications/CocosCreator.app/Contents/Resources/cocos2d-x:/Applications/CocosCreator.app/Contents/Resources/cocos2d-x/cocos:/Applications/CocosCreator.app/Contents/Resources/cocos2d-x/external
 -j4
 NDK_DEBUG=1

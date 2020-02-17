@@ -1,15 +1,11 @@
 cc.Class({
     extends: cc.Component,
     properties: {
-        agoraClient: {
-            default: null,
-            type: Object
-        },
-        agoraInst: {
-            default: null,
-            type: Object
-        },
         sprites: {
+        default: null,
+        type: Object
+        },
+        textures: {
             default: null,
             type: Object
         },
@@ -17,104 +13,137 @@ cc.Class({
             default: null,
             type: Object
         },
-        agoraTag: "[Agora] js",
-        headerW: 280,
-        headerH: 210,
+        handler: -100,
+        headerW: 240,
+        headerH: 180,
         headerOffset: 20,
+        localUid: 0,
     },
+
     onLoad: function () {
         var appId = #YOUR_APPID;
-        var sprites = {};
-        this.sprites = sprites;
+        this.sprites = {};
+        this.textures = {};
         const uids = new Set();
         this.uids = uids;
-        this.uids.add(0);
-        this.agoraInst = new agoraCreator();
-        this.agoraInst.initialize(appId);
-        this.agoraInst.enableVideo();
-        this.agoraInst.enableVideoObserver();
-        this.agoraInst.joinChannel("", "10011", "", 0);
-
-        this.agoraInst.onLeaveChannel = function (rtcStats) {
-            console.log("[Agora] js  onLeaveChannel");
-        };
-
-        this.agoraInst.onJoinChannelSuccess = function (channelName, uid, elapsed) {
-            console.log("[Agora] js  onJoinChannelSuccess");
-        };
-
-        this.agoraInst.onUserJoined = function (uid, elapsed) {
-            uids.add(uid);
-            console.log("[Agora] js onUserJoined uid = %d", uid);
-        };
-
-        this.agoraInst.onUserOffline = function (uid, reason) {
-            uids.delete(uid);
-            sprites[uid] = null;
-            console.log("[Agora] js onUserOffline uid = %d", uid);
-        };
-
-        setInterval(this.getTexture.bind(this), 40);
+        agora && agora.init(appId);
+        agora.setVideoProfile(52);
+        agora.setParameters("{\"rtc.log_filter\": 65535}");
+        agora.setChannelProfile(0);
+        agora.enableVideo();
+        agora.enableVideoObserver();
+        this.addSprite(this.localUid);
+        this.initAgoraEvents();
+        agora.joinChannel("", "1001", "", 0);
+        console.log("[Agora] js cc.log console joinChannel");
+        setInterval(this.updateTexture.bind(this), 40);
     },
 
-    getTexture: function () {
-        console.log("[Agora] js getTexture");
-        var e = !0, t = !1, o = void 0;
-        try {
-            for (var i, a = this.uids[Symbol.iterator](); !(e = (i = a.next()).done); e = !0) {
-                var l = i.value, n = this.agoraInst.updateTexture(l);
-                this.updateTexture(l, n);
-            }
-        } catch (e) {
-            t = !0;
-            o = e;
-        } finally {
-            try {
-                !e && a.return && a.return();
-            } finally {
-                if (t) throw o;
-            }
-        }
+    update: function (dt) {
+        
     },
 
-    updateTexture: function (uid, texture) {
-        var r = this.sprites[uid];
-        if (null == r) {
-            var n = new cc.SpriteFrame();
-            n.setTexture(texture);
+    onDestroy: function () {
+        this.uninitAgoraEvents();
+    },
+
+    updateTexture() {
+        var e = !0;
+        for (var i, a = this.uids[Symbol.iterator](); !(e = (i = a.next()).done); e = !0) {
+            var uid = i.value;
+            if (this.textures[uid] != null) {
+                var handler = this.textures[uid].getImpl().getHandle();
+                agora.updateTexture(handler, uid);
+            }
+        }    
+    },
+
+    initAgoraEvents: function() {
+        agora.on('join-channel-success', this.onJoinChannelSuccess, this);
+        agora.on('leave-channel', this.onLeaveChannel, this);
+        agora.on('user-joined', this.onUserJoined, this);
+        agora.on('user-offline', this.onUserOffline, this);
+    },
+
+    unInitAgoraEvents: function() {
+        agora.off('join-channel-success', this.onJoinChannelSuccess);
+        agora.off('leave-channel', this.onLeaveChannel);
+        agora.off('user-joined', this.onUserJoined);
+        agora.off('user-offline', this.onUserOffline);
+    },
+    
+    onJoinChannelSuccess: function (channel, uid, elapsed) {
+        console.log("[Agora] js onJoinChannelSuccess channel = " + channel + " ,uid = " + uid);
+    },
+
+    onLeaveChannel: function (stat) {
+        console.log("[Agora] js onLeaveChannel ");
+    },
+
+    onUserJoined: function (uid, elapsed) {
+        console.log("[Agora] js onUserJoined ");
+        this.addSprite(uid);
+    },
+
+    onUserOffline: function (uid, reason) {
+        this.removeSprite(uid);
+    },
+
+    createTexture: function(uid) {
+        console.log("[Agora] js createTexture " + uid);
+        var texture = new cc.Texture2D();
+        texture.initWithData(null, cc.Texture2D.PixelFormat.RGBA32F, 360, 270);
+        this.textures[uid] = texture;
+    },
+
+    addSprite: function(uid) {
+        this.uids.add(uid);
+        this.createTexture(uid);
+        var sprite = this.sprites[uid];
+        console.log("[Agora] js addSprite " + uid);
+        if (sprite == null) {
+            var spriteFrame = new cc.SpriteFrame();
+            spriteFrame.setTexture(this.textures[uid]);
             var a = new cc.Node("Sprite");
-            (r = a.addComponent(cc.Sprite)).spriteFrame = n;
+            (sprite = a.addComponent(cc.Sprite)).spriteFrame = spriteFrame;
             a.x = 0;
             a.y = 0;
             a.setContentSize(this.headerW, this.headerH);
             a.parent = this.node;
-            this.sprites[uid] = r;
+            this.sprites[uid] = sprite;
             this.updateHeadersDisplay();
-        } else {
-            r.spriteFrame.setTexture(texture);
-            r.node.setContentSize(this.headerW, this.headerH);
+            console.log("[Agora] js addSprite new Sprite for user " + uid);
         }
     },
 
-    updateHeadersDisplay: function () {
-        var e = cc.director.getWinSize(), t = -e.width / 2, r = -e.height / 2, n = 0;
-        for (var a in this.sprites) {
-            if (this.sprites[a] != null)
-            {
-                var i = this.sprites[a].node;
-                if (a == 0) {
-                    i.anchorX = 0;
-                    i.anchorY = 0;
-                    i.x = e.width / 2 - this.headerW;
-                    i.y = e.height / 2 - this.headerH;
-                } else {
-                    i.anchorX = 0;
-                    i.anchorY = 0;
-                    i.x = n * this.headerW + n * this.headerOffset + t;
-                    i.y = r;
-                    n++;
-                }
+    removeSprite: function(uid) {
+        if (this.sprites[uid] != null)
+        {
+            var node = this.sprites[uid].node;
+            node.destroy();
+            delete this.sprites[uid];
+            delete this.textures[uid];
+            this.uids.delete[uid];
+        }
+    },
+
+    updateHeadersDisplay: function() {
+        var screen = cc.director.getWinSize();
+        var screenWidth = -screen.width / 2;
+        var screenHeight = -screen.height / 2;
+        var i = 0;
+        for (var uid in this.sprites) {
+            console.log("[Agora] js updateHeadersDisplay " + uid);
+            var l = this.sprites[uid].node;
+            if (uid == this.localUid) {
+            } else {
+                l.anchorX = 0;
+                l.anchorY = 0;
+                l.x = i * this.headerW + i * this.headerOffset + screenWidth;
+                l.y = screenHeight;
+                i++;
+                console.log("[Agora] js updateHeadersDisplay  x = " + l.x + " ,y = " + l.y);
             }
         }
     }
-});
+  });

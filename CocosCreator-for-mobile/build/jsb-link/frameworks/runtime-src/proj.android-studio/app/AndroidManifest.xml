@@ -1,50 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="io.agora.cocos"
+    package="org.cocos2d.helloworld"
     android:installLocation="auto">
 
     <uses-feature android:glEsVersion="0x00020000" />
-
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>  
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>  
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>  
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>  
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.RESTART_PACKAGES" />
-    <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
 
     <!---agora creator permission-->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.READ_LOGS" />
-    <!--agora creator permission-->
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <!---agora creator permission-->
 
     <application
         android:allowBackup="true"
         android:label="@string/app_name"
         android:icon="@mipmap/ic_launcher">
-        
+
         <!-- Tell Cocos2dxActivity the name of our .so -->
         <meta-data android:name="android.app.lib_name"
-                   android:value="cocos2djs" />
-        
+            android:value="cocos2djs" />
+
         <activity
             android:name="org.cocos2dx.javascript.AppActivity"
             android:screenOrientation="sensorLandscape"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+            android:usesCleartextTraffic="true"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:launchMode="singleTask"
+            android:taskAffinity="" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -52,5 +41,5 @@
             </intent-filter>
         </activity>
     </application>
-    
+
 </manifest>

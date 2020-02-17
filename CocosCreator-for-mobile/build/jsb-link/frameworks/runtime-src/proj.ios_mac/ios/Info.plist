@@ -5,7 +5,7 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>English</string>
     <key>CFBundleDisplayName</key>
-    <string>Agora Cocos</string>
+    <string>${PRODUCT_NAME}</string>
     <key>CFBundleExecutable</key>
     <string>${EXECUTABLE_NAME}</string>
     <key>CFBundleIcons~ipad</key>
@@ -32,9 +32,9 @@
       <true/>
     </dict>
     <key>NSCameraUsageDescription</key>
-    <string>使用摄像头</string>
+    <string>Yes</string>
     <key>NSMicrophoneUsageDescription</key>
-    <string>使用麦克风</string>
+    <string>Yes</string>
     <key>UILaunchStoryboardName</key>
     <string>LaunchScreen</string>
     <key>UIPrerenderedIcon</key>

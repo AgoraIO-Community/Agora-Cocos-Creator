@@ -1,5 +1,7 @@
 /****************************************************************************
  Copyright (c) 2010 cocos2d-x.org
+ Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -23,12 +25,10 @@
  ****************************************************************************/
 
 #include "AppDelegate.h"
-#include "cocos2d.h"
-
-USING_NS_CC;
 
 int main(int argc, char *argv[])
 {
-    AppDelegate app;
-    return Application::getInstance()->run();
+    AppDelegate app(960, 640);
+    app.start();
+    return 0;
 }
