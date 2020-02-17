@@ -27,7 +27,6 @@ cc.Class({
         const uids = new Set();
         this.uids = uids;
         agora && agora.init(appId);
-        agora.setVideoProfile(52);
         agora.setParameters("{\"rtc.log_filter\": 65535}");
         agora.setChannelProfile(0);
         agora.enableVideo();
