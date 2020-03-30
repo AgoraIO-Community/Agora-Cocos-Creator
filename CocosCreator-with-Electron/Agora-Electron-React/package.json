@@ -1,0 +1,49 @@
+{
+  "name": "electron-react-webpack",
+  "version": "1.0.0",
+  "description": "Electron + React 16 + Webpack 4 template.",
+  "main": "main.js",
+  "build": {
+    "asar": false,
+    "files": [
+      "build/**/*",
+      "main.js",
+      "index.html",
+      "node_modules/**/*"
+    ],
+    "mac": {
+      "hardenedRuntime": false
+    }
+  },
+  "scripts": {
+    "bundle": "webpack --mode development",
+    "serve": "electron .",
+    "dev": "cross-env NODE_ENV=development concurrently \"npm run serve\" \"wait-on npm run bundle\"",
+    "dist": "cross-env NODE_ENV=production webpack --mode development && electron-builder"
+  },
+  "author": "J. Renato Ramos González <renato.etc.etc.etc@gmail.com>",
+  "repository": "pastahito/electron-react-webpack",
+  "license": "WTFPL",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.4",
+    "babel-preset-react": "^6.24.1",
+    "concurrently": "^5.0.2",
+    "cross-env": "^6.0.3",
+    "css-loader": "^0.28.10",
+    "electron": "5.0.8",
+    "electron-builder": "^21.2.0",
+    "electron-reload": "^1.2.2",
+    "extract-text-webpack-plugin": "^4.0.0-beta.0",
+    "file-loader": "^1.1.10",
+    "npm-run-all": "^4.1.2",
+    "wait-on": "^3.3.0",
+    "webpack": "^4.1.1",
+    "webpack-cli": "^3.1.1"
+  },
+  "dependencies": {
+    "agora-electron-sdk": "^2.9.1-beta.1",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0"
+  }
+}
