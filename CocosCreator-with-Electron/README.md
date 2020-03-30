@@ -1,7 +1,7 @@
 
 step 1: Build web-desktop project and copy it into electron demo.
 
-1.1: Open project named CocosCreator_for-Electron by Cocos Creator v1.8.2.
+1.1: Open project named CocosCreator_for-Electron by Cocos Creator v2.2.1.
 
 1.2: Input your appId in CocosCreator_for-Electron/assets/Script/HelloWorld.js : var appId = #YOUR_APPID.
 
