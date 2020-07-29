@@ -7,7 +7,10 @@
 4: Download Agora Android video sdk and IOS video sdk.
 
 5: Unzip Android sdk package, copy Android video sdk into build/jsb-link/frameworks/runtime-src/proj.android-studio/app/jni/agora/
-   
+ 
+copy the files which are in include dir into build/jsb-link/frameworks/runtime-src/Classes/agora/include/agora
+ 
+
 6: Unzip IOS sdk package, copy IOS video sdk into build/jsb-link/frameworks/runtime-src/proj.ios_mac/agora-framework/agora-yuv-framework
 
 7: copy cocos2d-x sdk into build/jsb-link/frameworks/runtime-src/  (if you can not find cocos2d-x sdk, you just need to create an empty project and build it (Project->Build...->Build ), you can find the cocos2d-x directory in this path: build/jsb-link/frameworks/runtime-src/  which project is create by yourself just now. At last, copy the cocos2d-x sdk into Agora Cocos Creator)
