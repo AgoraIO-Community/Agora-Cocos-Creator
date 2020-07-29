@@ -8,6 +8,8 @@
 
 5: Unzip Android sdk package, copy Android video sdk into build/jsb-link/frameworks/runtime-src/proj.android-studio/app/jni/agoraEngine/
 
+copy video sdk include file into build/jsb-link/frameworks/runtime-src/Classes/agoraEngine/include/agora
+
 6: Unzip IOS sdk package, copy IOS video sdk into build/jsb-link/frameworks/runtime-src/proj.ios_mac/agora-framework/
 
 7: Open Android Studio Project in build/jsb-link/frameworks/runtime-src/proj.android-studio and build it.
