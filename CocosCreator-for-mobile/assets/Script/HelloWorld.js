@@ -39,7 +39,7 @@ cc.Class({
     },
 
     update: function (dt) {
-        
+
     },
 
     onDestroy: function () {
@@ -54,7 +54,7 @@ cc.Class({
                 var handler = this.textures[uid].getImpl().getHandle();
                 agora.updateTexture(handler, uid);
             }
-        }    
+        }
     },
 
     initAgoraEvents: function() {
@@ -70,7 +70,7 @@ cc.Class({
         agora.off('user-joined', this.onUserJoined);
         agora.off('user-offline', this.onUserOffline);
     },
-    
+
     onJoinChannelSuccess: function (channel, uid, elapsed) {
         console.log("[Agora] js onJoinChannelSuccess channel = " + channel + " ,uid = " + uid);
     },
